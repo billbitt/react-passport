@@ -1,5 +1,19 @@
+// import dependencies 
 import React from "react";
 import ReactDom from "react-dom";
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 
-ReactDom.render(<h1>Hello from React</h1>, document.getElementById("react-app"));
+// import components 
+import HomePage from "./components/HomePage.jsx";
+
+// render the components
+const App = () => {
+    return (
+        <MuiThemeProvider>
+                <HomePage />
+        </MuiThemeProvider>
+    )
+};
+
+ReactDom.render(<App />, document.getElementById("react-app"));
 
