@@ -1,15 +1,23 @@
-// load dependencies
+// Load dependencies.
 const express = require("express");
+const bodyParser = require("body-parser");
 
-// define variable to hold express()
+// Define variable to hold express().
 const app = express();
-// tell app to look for static files in the below directories 
+// Tell app to look for static files in the below directories .
 app.use(express.static("./server/static/"));
 app.use(express.static("./client/dist/"));
+// Tell the app to parse HTTP body mesages
+app.use(bodyParser.urlencoded({ extended: false}));
 
-// define the port 
+// Routes.
+const authRoutes = require("./server/routes/auth");
+app.use("/auth", authRoutes);
+
+// Define the port. 
 const PORT = process.env.PORT || 3000;
-// start the server 
+
+// Start the server.
 app.listen(PORT, () => {
     console.log("Server is running on PORT:", PORT);
 })
