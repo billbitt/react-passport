@@ -39,10 +39,44 @@ class SignUpPage extends React.Component {
         When a user submits the form, all we do at this moment is output current state values to the browser console.
     */
     processForm(event) {
+        // Prevent default action.  in this case, action is the form submission event.
         event.preventDefault();
-        console.log("name:", this.state.user.name);
-        console.log("email:", this.state.user.email);
-        console.log("password:", this.state.user.password);
+
+        // Create a string for an HTTP body message
+        const name = encodeURIComponent(this.state.user.name);
+        const email = encodeURIComponent(this.state.user.email);
+        const password = encodeURIComponent(this.state.user.password);
+        const formData = `name=${name}&email=${email}&password=${password}`;
+        //console.log("name:", name, "email:", email, "password", password);
+        //console.log("formData:", formData);
+
+        // Create an ajax request, which will change the component state depending on the HTTP response code status received.
+        const xhr = new XMLHttpRequest();
+        xhr.open("post", "/auth/signup");
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.responseType = "json";
+        xhr.addEventListener("load", () => {
+            // success case.
+            if (xhr.status === 200) { 
+                // change the component-container state.
+                this.setState({
+                    errors: {}
+                });
+                // console log the result 
+                console.log("The form is valid");
+            // falure case.
+            } else {
+                // ??
+                const errors = xhr.response.errors ? xhr.response.errors : {};
+                errors.summary = xhr.response.message;
+                // change the component-container state.
+                this.setState({
+                    errors
+                });
+            }
+        });
+        // ?? 
+        xhr.send(formData);
     }
 
     // Render the component.

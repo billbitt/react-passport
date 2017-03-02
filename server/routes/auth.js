@@ -12,6 +12,7 @@ const router = new express.Router();
  */
 
 function validateSignupForm(payload) {
+    //console.log("validating signup form.  Payload:", payload);
     const errors = {};
     let isFormValid = true;
     let message = "";
@@ -83,6 +84,8 @@ function validateLoginForm(payload) {
 // POST ROUTES
 // Route for signup.
 router.post("/signup", (req, res) => {
+    console.log("/auth/signup POST received.");
+
     const validationResult = validateSignupForm(req.body);
     if (validationResult.success === false) {
         return res.status(400).json({
@@ -97,6 +100,8 @@ router.post("/signup", (req, res) => {
 
 // Route for login.
 router.post("/login", (req, res) => {
+    console.log("/auth/login POST received.");
+
     const validationResult = validateLoginForm(req.body);
     if (validationResult.success === false) {
         return res.status(400).json({
