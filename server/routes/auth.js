@@ -61,7 +61,7 @@ function validateLoginForm(payload) {
     // make sure an email is provided and is a string.
     if (!payload || typeof payload.email !== "string" || payload.email.trim().length === 0) {
         isFormValid = false;
-        errors.email = "Please an email address.";
+        errors.email = "Please enter an email address.";
     }
 
     // Make sure a password is provided and is a string 
