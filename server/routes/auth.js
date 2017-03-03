@@ -92,7 +92,9 @@ router.post("/signup", (req, res, next) => {
         })
     } else {
         return passport.authenticate("local-signup", (err) => {
-            // handle errors.
+            /* handle errors.
+            If a user with the same email address already exists, he should get a concrete error message, but if something unpredictable happens he shouldn’t get a descriptive message containing error codes, as he may use the information for bad purposes.
+            */
             if (err) {
                 // check for a specific mongo error.
                 if (err.name === "MongoError" && err.code === 11000){
@@ -134,8 +136,11 @@ router.post("/login", (req, res, next) => {
         })
     // if validation is successfull.
     } else {
-        return passport.authenticate("local-login", (err, token, userData) => {
-            // handle errors.
+        return passport.authenticate("local-login", (err, token, userData) => { 
+            /* handle errors. 
+            We’re checking if there are no errors have appeared (for example, a user has provided a wrong password). 
+            In the successful case, we send a response with a token.
+            */
             if (err) {
                 // look for this specific error.
                 if (err.name === "IncorrectCredentialsError") {
@@ -150,7 +155,7 @@ router.post("/login", (req, res, next) => {
                     message: "Could not process the form."
                 });
             }
-            // if there are no errors, return the below.
+            // if there are no errors, return a success message with a token 
             return res.json({
                 success: true,
                 message: "You have successfully logged in!",
