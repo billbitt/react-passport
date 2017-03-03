@@ -125,15 +125,40 @@ router.post("/signup", (req, res, next) => {
 router.post("/login", (req, res, next) => {
     //console.log("/auth/login POST received.");
     const validationResult = validateLoginForm(req.body);
+    // if validation fails. 
     if (!validationResult.success) {
         return res.status(400).json({
             success: false,
             message: validationResult.message,
             errors: validationResult.errors
         })
+    // if validation is successfull.
     } else {
-        return res.status(200).end();
+        return passport.authenticate("local-login", (err, token, userData) => {
+            // handle errors.
+            if (err) {
+                // look for this specific error.
+                if (err.name === "IncorrectCredentialsError") {
+                    return res.status(400).json({
+                        success: false,
+                        message: err.message
+                    });
+                };
+                // for all other errors send this as default.
+                return res.status(400).json({
+                    success: false,
+                    message: "Could not process the form."
+                });
+            }
+            // if there are no errors, return the below.
+            return res.json({
+                success: true,
+                message: "You have successfully logged in!",
+                token,
+                user: userData
+            });
+        })(req, res, next);        
     }    
-})
+});
 
 module.exports = router;
