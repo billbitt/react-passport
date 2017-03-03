@@ -81,8 +81,6 @@ function validateLoginForm(payload) {
     };
 }
 
-  
-
 // POST ROUTES
 // Route for signup.
 router.post("/signup", (req, res) => {
