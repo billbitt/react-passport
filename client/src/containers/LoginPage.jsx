@@ -51,6 +51,7 @@ class LoginPage extends React.Component {
         xhr.addEventListener("load", () => {
             // Success case.
             if (xhr.status === 200) {
+                /*if we reach this point, the user has entered a correct email and password, so we want to save the token and redirect to the dashboard. */
                 // change the componenet-container state.
                 this.setState({
                     errors: {}
@@ -93,8 +94,8 @@ class LoginPage extends React.Component {
                 onSubmit={this.processForm}
                 onChange={this.changeUser}
                 errors={this.state.errors}
-                user={this.state.user}
                 successMessage={this.state.successMessage}
+                user={this.state.user}
             />
         );
     }
