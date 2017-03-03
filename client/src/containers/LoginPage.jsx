@@ -1,16 +1,26 @@
 import React, { PropTypes } from 'react';
+import Auth from "../modules/Auth";
 import LoginForm from '../components/LoginForm.jsx';
 
 
 class LoginPage extends React.Component {
 
     // Class constructor.
-    constructor(props) {
-        super(props);
+    constructor(props, context) {
+        super(props, context);
+
+        const storedMessage = localStorage.getItem("successMessage");
+        let successMessage = "";
+
+        if (storedMessage) {
+            successMessage = storedMessage;
+            localStorage.removeItem("successMessage");
+        }
 
         // Set the initial component state.
         this.state = {
             errors: {},
+            successMessage,
             user: {
                 email: '',
                 password: ''
@@ -23,6 +33,7 @@ class LoginPage extends React.Component {
     }
 
     // Process the form.
+    // @param {object} event - the JavaScript event object 
     processForm(event) {
         // Prevent default action. in this case, action is the form submission event.
         event.preventDefault();
@@ -40,35 +51,38 @@ class LoginPage extends React.Component {
         xhr.addEventListener("load", () => {
             // Success case.
             if (xhr.status === 200) {
-                // change the componenet-container state
+                // change the componenet-container state.
                 this.setState({
                     errors: {}
                 });
-                // console log the result 
-                console.log("The form is valid");
+                // save the token.
+                Auth.deauthenticateUser(xhr.response.token);
+                // redirect by changing the current URL to "/".
+                this.context.router.replace("/");
             // Failure case.
             } else {
                 // ?? 
                 const errors = xhr.response.errors ? xhr.response.errors : {};
                 errors.summary = xhr.response.message;
-                // change the componenet-container state
+                // change the componenet-container state to show errors.
                 this.setState({
                     errors
-                })
+                });
             }
         });
-        // ??
+        // send the HTTP request, using the formData as the body.
         xhr.send(formData);
     }
 
     // Change the user object.
+    // @param {object} event - the JavaScript event object. 
     changeUser(event) {
         const field = event.target.name;
         const user = this.state.user;
         user[field] = event.target.value;
 
         this.setState({
-        user
+            user
         });
     }
 
@@ -80,10 +94,16 @@ class LoginPage extends React.Component {
                 onChange={this.changeUser}
                 errors={this.state.errors}
                 user={this.state.user}
+                successMessage={this.state.successMessage}
             />
         );
     }
 
 }
+
+// ?? 
+LoginPage.contextTypes = {
+    router: PropTypes.object.isRequired
+};
 
 export default LoginPage;
