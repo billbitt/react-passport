@@ -3,9 +3,9 @@ import SignUpForm from "../components/SignUpForm.jsx";
 
 class SignUpPage extends React.Component {
     // class constructor
-    constructor(props) {
-        super(props);
-
+    constructor(props, context) {
+        // ??
+        super(props, context);
         // set the initial component state
         this.state = {
             errors: {},
@@ -15,28 +15,15 @@ class SignUpPage extends React.Component {
                 password: ""
             }
         };
-
+        // bind "this" to the methods we define below 
         this.processForm = this.processForm.bind(this);
         this.changeUser = this.changeUser.bind(this);
     }
 
-    // Change the user object.
-    /*
-        This will change the component state by taking the name attribute of an input element as a key. A value for this key will be taken from a user’s input.
-    */
-    changeUser(event) {
-        const field = event.target.name;
-        const user = this.state.user;
-        user[field] = event.target.value;
-
-        this.setState({
-            user
-        });
-    }
-
     // Process the form.
     /*
-        When a user submits the form, all we do at this moment is output current state values to the browser console.
+        When a user submits the form, this method will be used to evaluate the input.
+        @param {object} event - the JavaScript event object 
     */
     processForm(event) {
         // Prevent default action.  in this case, action is the form submission event.
@@ -62,21 +49,42 @@ class SignUpPage extends React.Component {
                 this.setState({
                     errors: {}
                 });
-                // console log the result 
-                console.log("The form is valid");
-            // falure case.
+                
+                //console.log("The form is valid");
+
+                // set a message 
+                localStorage.setItem("successMessage", xhr.response.message);
+
+                // make a redirect
+                this.context.router.replace("/login");
+
+            // failure case.
             } else {
                 // ??
                 const errors = xhr.response.errors ? xhr.response.errors : {};
                 errors.summary = xhr.response.message;
-                // change the component-container state.
+                // change the component-container state to show the errors.
                 this.setState({
                     errors
                 });
             }
         });
-        // ?? 
+        // initiate the http request and use the formData as the body 
         xhr.send(formData);
+    }
+
+    // Change the user object.
+    /*
+        This will change the component state by taking the name attribute of an input element as a key. A value for this key will be taken from a user’s input.
+    */
+    changeUser(event) {
+        const field = event.target.name;
+        const user = this.state.user;
+        user[field] = event.target.value;
+
+        this.setState({
+            user
+        });
     }
 
     // Render the component.
@@ -94,6 +102,11 @@ class SignUpPage extends React.Component {
         );
     }
 }
+
+// ?? 
+SignUpPage.contextTypes = {
+    router: PropTypes.object.isREquired
+};
 
 export default SignUpPage;
 
