@@ -1,14 +1,14 @@
 const express = require("express");
 const validator = require("validator");
+const passport = require("passport");
 
 const router = new express.Router();
 
-/**
- * Validate the sign up form
- *
- * @param {object} payload - the HTTP body message
- * @returns {object} The result of validation. Object contains a boolean validation result,
- *                   errors tips, and a global message for the whole form.
+/*
+    Validate the sign up form
+
+    @param {object} payload - the HTTP body message
+    @returns {object} The result of validation. Object contains a boolean validation result, errors tips, and a global message for the whole form.
  */
 
 function validateSignupForm(payload) {
@@ -45,13 +45,11 @@ function validateSignupForm(payload) {
     };
 }
 
-/**
- * Validate the login form
- *
- * @param {object} payload - the HTTP body message
- * @returns {object} The result of validation. Object contains a boolean validation result,
- *                   errors tips, and a global message for the whole form.
- */
+/*
+    Validate the login form.
+    @param {object} payload - the HTTP body message
+    @returns {object} The result of validation. Object contains a boolean validation result, errors tips, and a global message for the whole form.
+*/
 
 function validateLoginForm(payload) {
     const errors = {};
@@ -83,27 +81,51 @@ function validateLoginForm(payload) {
 
 // POST ROUTES
 // Route for signup.
-router.post("/signup", (req, res) => {
-    console.log("/auth/signup POST received.");
-
+router.post("/signup", (req, res, next) => {
+    //console.log("/auth/signup POST received.");
     const validationResult = validateSignupForm(req.body);
-    if (validationResult.success === false) {
+    if (!validationResult.success) {
         return res.status(400).json({
             success: false,
             message: validationResult.message,
             errors: validationResult.errors
         })
     } else {
-        return res.status(200).end();
+        return passport.authenticate("local-signup", (err) => {
+            // handle errors.
+            if (err) {
+                // check for a specific mongo error.
+                if (err.name === "MongoError" && err.code === 11000){
+                    // the 11000 Mongo code is for a duplication email error.
+                    // the 409 HTTP status code is for conflict error.
+                    return res.status(409).json({
+                        success: false,
+                        message: "Check the form for error.",
+                        errors: {
+                            email: "This email is already taken."
+                        }
+                    });
+                }
+                // as a default for other errors, return the below.
+                return res.status(400).json({
+                    success: false,
+                    message: "Could not process the form."
+                });
+            }
+            // success case.
+            return res.status(200).json({
+                success: true,
+                message: "You have successfully signed up! Now you should be able to log in."
+            });
+        })(req, res, next);
     }    
-})
+});
 
 // Route for login.
-router.post("/login", (req, res) => {
-    console.log("/auth/login POST received.");
-
+router.post("/login", (req, res, next) => {
+    //console.log("/auth/login POST received.");
     const validationResult = validateLoginForm(req.body);
-    if (validationResult.success === false) {
+    if (!validationResult.success) {
         return res.status(400).json({
             success: false,
             message: validationResult.message,
