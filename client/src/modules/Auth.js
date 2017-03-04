@@ -1,7 +1,7 @@
 class Auth {
     // authenticate a user.  save a token string in Local Storage.
     // @param {string} token
-    static authetnicateUser(token) {
+    static authenticateUser(token) {
         localStorage.setItem("token", token);
     }
 

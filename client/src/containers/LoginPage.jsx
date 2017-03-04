@@ -55,11 +55,12 @@ class LoginPage extends React.Component {
             if (xhr.status === 200) {
                 /*if we reach this point, the user has entered a correct email and password, so we want to save the token and redirect to the dashboard. */
                 // change the componenet-container state.
+                console.log("The username and password came back as a match.")
                 this.setState({
                     errors: {}
                 });
                 // save the token.
-                Auth.deauthenticateUser(xhr.response.token);
+                Auth.authenticateUser(xhr.response.token); //note: i changed fromd deauthenticateUser to authenticateUser 
                 // redirect by changing the current URL to "/".
                 this.context.router.replace("/");
             // Failure case.
