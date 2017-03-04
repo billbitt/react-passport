@@ -52,6 +52,9 @@ function validateSignupForm(payload) {
 */
 
 function validateLoginForm(payload) {
+
+    console.log("server - validating login form.  payload:", payload);
+
     const errors = {};
     let isFormValid = true;
     let message = "";
@@ -92,6 +95,7 @@ router.post("/signup", (req, res, next) => {
         })
     } else {
         return passport.authenticate("local-signup", (err) => {
+            console.log("error is type:", typeof(err));
             /* handle errors.
             If a user with the same email address already exists, he should get a concrete error message, but if something unpredictable happens he shouldn’t get a descriptive message containing error codes, as he may use the information for bad purposes.
             */
@@ -115,6 +119,7 @@ router.post("/signup", (req, res, next) => {
                 });
             }
             // success case.
+            console.log("login validation (authentication) was a success. error:", err);
             return res.status(200).json({
                 success: true,
                 message: "You have successfully signed up! Now you should be able to log in."
@@ -125,10 +130,14 @@ router.post("/signup", (req, res, next) => {
 
 // Route for login.
 router.post("/login", (req, res, next) => {
-    //console.log("/auth/login POST received.");
+
+    console.log("/auth/login POST received.");
+
     const validationResult = validateLoginForm(req.body);
+
     // if validation fails. 
     if (!validationResult.success) {
+        console.log("Login form validation failed.");
         return res.status(400).json({
             success: false,
             message: validationResult.message,
@@ -136,12 +145,15 @@ router.post("/login", (req, res, next) => {
         })
     // if validation is successfull.
     } else {
+        console.log("Login form validation was a success.");
         return passport.authenticate("local-login", (err, token, userData) => { 
             /* handle errors. 
             We’re checking if there are no errors have appeared (for example, a user has provided a wrong password). 
             In the successful case, we send a response with a token.
             */
+            console.log("error is type:", typeof(err));
             if (err) {
+                console.log("login validation (authentication) failed. Error:", err);
                 // look for this specific error.
                 if (err.name === "IncorrectCredentialsError") {
                     return res.status(400).json({
@@ -156,6 +168,7 @@ router.post("/login", (req, res, next) => {
                 });
             }
             // if there are no errors, return a success message with a token 
+            console.log("login validation (authentication) succeeded.");
             return res.json({
                 success: true,
                 message: "You have successfully logged in!",

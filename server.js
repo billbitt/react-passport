@@ -34,6 +34,11 @@ const apiRoutes = require("./server/routes/api");
 app.use("/auth", authRoutes);
 app.use("/api", apiRoutes);
 
+// server-site route that directs http routes back to the react app
+app.get("/*", function(req, res) {
+    res.sendFile(__dirname + '/server/static/index.html')
+})
+
 // Define the port. 
 const PORT = process.env.PORT || 3000;
 

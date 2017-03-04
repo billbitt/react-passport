@@ -4,6 +4,7 @@ const config = require("../../config");
 
 // the function that will be the auth checker middleware.
 module.exports = (req, res, next) => {
+    console.log("initiating auth-check middleware");
     // check to see if the authorization header exists.
     if (!req.headers.authorization) {
         // send back a response of status code 401 (unauthorized) 

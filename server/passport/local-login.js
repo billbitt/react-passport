@@ -15,13 +15,16 @@ module.exports = new PassportLocalStrategy(
     }, 
     // callback.
     (req, email, password, done) => {
+        
+        console.log("Initiating the passport local-login strategy.")
+
         // build user data object.
         const userData = {
             email: email.trim(),
             password: password.trim()
         };
         // find a user by email address
-        return userData.findOne({ email: userData.email }, (err, user) => {
+        return User.findOne({ email: userData.email }, (err, user) => {
             // if error 
             if (err) {return done(err); }
             // if user does not exist 
@@ -58,6 +61,7 @@ module.exports = new PassportLocalStrategy(
                     name: user.name
                 };
                 // return 
+                console.log("User and password are a match.")
                 return done(null, token, data);
             });
         });
