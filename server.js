@@ -5,7 +5,7 @@ const passport = require("passport");
 const config = require("./config");
 
 // Connect to the database and load models.
-require("./server/models").connect(process.env.MONGODB_URI); // config.dbUri
+require("./server/models").connect(config.dbUri); 
 
 // Define variable to hold express().
 const app = express();
@@ -29,10 +29,10 @@ const authCheckMiddleware = require("./server/middleware/auth-check");
 app.use("/api", authCheckMiddleware);
 
 // Routes.
-const authRoutes = require("./server/routes/auth");
-const apiRoutes = require("./server/routes/api");
-app.use("/auth", authRoutes);
-app.use("/api", apiRoutes);
+const authRoutes = require("./server/routes/auth"); 
+const apiRoutes = require("./server/routes/api"); 
+app.use("/auth", authRoutes); 
+app.use("/api", apiRoutes); 
 
 // server-site route that directs http routes back to the react app
 app.get("/*", function(req, res) {
